@@ -1,51 +1,69 @@
-#cash
-monthly_income = 5_000_000
-monthly_expenses = 3_500_000
-monthly_savings = monthly_income - monthly_expenses
+def calculate_monthly_savings(income, expenses):
+    return income - expenses
 
-print('Monthly savings:', monthly_savings)
+def handle_life_events(month, income, base_expenses):
+    expenses = base_expenses
+    messages = []
 
-if monthly_savings >= 2_000_000:
-    print('You are ready to invest')
-elif monthly_savings > 0:
-    print('Focus on skills building')
-else: 
-    print('Warning: financial risk')
-
-months = 6
-total_savings = 0
-
-#investments
-investment_balance = 0
-investment_rate = 0.05   # 5% per month
-investment_ratio = 0.30  # 30% of savings
-cash_savings = 0
-
-for month in range (1, 1 + months):
-    current_expenses = monthly_expenses
     if month == 4:
-        monthly_income += 500_000
-        print('Month 4: Income increased!')
-    if month == 5:
-        current_expenses += 1_000_000
-        print('Month 5: Emergency expense')
-    
-    monthly_savings = monthly_income - current_expenses
-    total_savings += monthly_savings
+        income += 500_000
+        messages.append('Income increased!')
 
-    if month >= 4:
-        invest_amount = monthly_savings * investment_ratio
-        cash_amount = monthly_savings - invest_amount
+    if month == 5:
+        expenses += 1_000_000
+        messages.append('Emergency expense')
+
+    return income, expenses, messages
+
+def process_investment(month, savings, cash_savings, investment_balance, ratio, rate):
+    if month == 4:
+        invest_amount = savings * ratio
+        cash_amount = savings - invest_amount
     else:
         invest_amount = 0
-        cash_amount = monthly_savings
-    
+        cash_amount = savings
+
     cash_savings += cash_amount
     investment_balance += invest_amount
-    investment_balance *= (1 + investment_rate)
-    total_net_worth = cash_savings + investment_balance
+    investment_balance *= (1 + rate)
 
-    print('Month', month)
-    print(' Cash savings:', cash_savings)
-    print(' Investment balance:', investment_balance)
-    print(' Net worth:', int(total_net_worth))
+    return cash_savings, investment_balance
+
+def simulate_months(months):
+    monthly_income = 5_000_000
+    base_expenses = 3_500_000
+
+    cash_savings = 0
+    investment_balance = 0
+
+    investment_ratio = 0.30
+    investment_rate = 0.05
+
+    for month in range(1, months + 1):
+        monthly_income, expenses, messages = handle_life_events(
+            month, monthly_income, base_expenses
+        )
+
+        print(f'\nMonth {month}')
+
+        for msg in messages:
+            print(' ', msg)
+
+        savings = calculate_monthly_savings(monthly_income, expenses)
+
+        cash_savings, investment_balance = process_investment(
+            month,
+            savings,
+            cash_savings,
+            investment_balance,
+            investment_ratio,
+            investment_rate
+        )
+
+        net_worth = cash_savings + investment_balance
+
+        print(' Cash savings:', int(cash_savings))
+        print(' Investment balance:', int(investment_balance))
+        print(' Net worth:', int(net_worth))
+
+simulate_months(6)
