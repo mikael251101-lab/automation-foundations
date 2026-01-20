@@ -1,22 +1,23 @@
 def calculate_monthly_savings(income, expenses):
     return income - expenses
 
-def handle_life_events(month, income, base_expenses):
-    expenses = base_expenses
+def handle_life_events(month, income, expenses):
     messages = []
 
-    if month == 4:
-        income += 500_000
+    # income grows every 3 months
+    if month % 3 == 0:
+        income *= 1.05
         messages.append('Income increased!')
 
-    if month == 5:
-        expenses += 1_000_000
-        messages.append('Emergency expense')
+    # expenses grow every 6 months
+    if month % 6 == 0:
+        expenses *= 1.03
+        messages.append('Expenses increased!')
 
     return income, expenses, messages
 
 def process_investment(month, savings, cash_savings, investment_balance, ratio, rate):
-    if month == 4:
+    if savings > 0:
         invest_amount = savings * ratio
         cash_amount = savings - invest_amount
     else:
@@ -65,5 +66,11 @@ def simulate_months(months):
         print(' Cash savings:', int(cash_savings))
         print(' Investment balance:', int(investment_balance))
         print(' Net worth:', int(net_worth))
+
+    print('\n====== SUMMARY ======')
+    print('Months simulated:', months)
+    print('Final cash:', int(cash_savings))
+    print('Final investment:', int(investment_balance))
+    print('Final net worth:', int(cash_savings + investment_balance))
 
 simulate_months(6)
