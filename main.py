@@ -1,76 +1,50 @@
-def calculate_monthly_savings(income, expenses):
-    return income - expenses
+def evaluate_financial_health(savings, expenses):
+    if savings <= 0:
+        return 'DANGER'
+    elif savings < expenses:
+        return 'RISKY'
+    elif savings >= 2 * expenses:
+        return 'SAFE'
+    else:
+        return 'STABLE'
 
-def handle_life_events(month, income, expenses):
+def give_advice(status):
     messages = []
 
-    # income grows every 3 months
-    if month % 3 == 0:
-        income *= 1.05
-        messages.append('Income increased!')
-
-    # expenses grow every 6 months
-    if month % 6 == 0:
-        expenses *= 1.03
-        messages.append('Expenses increased!')
-
-    return income, expenses, messages
-
-def process_investment(month, savings, cash_savings, investment_balance, ratio, rate):
-    if savings > 0:
-        invest_amount = savings * ratio
-        cash_amount = savings - invest_amount
+    if status == 'DANGER':
+        messages.append('Emergency: stop investing, focus on survival')
+    elif status == 'RISKY':
+        messages.append('Reduce expenses or increase income')
+    elif status == 'STABLE':
+        messages.append('Keep building skills and savings')
     else:
-        invest_amount = 0
-        cash_amount = savings
-
-    cash_savings += cash_amount
-    investment_balance += invest_amount
-    investment_balance *= (1 + rate)
-
-    return cash_savings, investment_balance
+        messages.append('You can invest more aggressively')
+    
+    return messages
 
 def simulate_months(months):
     monthly_income = 5_000_000
-    base_expenses = 3_500_000
-
+    expenses = 3_500_000
     cash_savings = 0
-    investment_balance = 0
-
-    investment_ratio = 0.30
-    investment_rate = 0.05
 
     for month in range(1, months + 1):
-        monthly_income, expenses, messages = handle_life_events(
-            month, monthly_income, base_expenses
-        )
-
         print(f'\nMonth {month}')
 
+        # 1. calculate savings
+        savings = monthly_income - expenses
+        cash_savings += savings
+
+        # 2. evaluate financial health
+        status = evaluate_financial_health(cash_savings, expenses)
+
+        # 3. get advice
+        messages = give_advice(status)
+
+        # 4. print result
+        print(' Savings:', cash_savings)
+        print(' Status:', status)
+
         for msg in messages:
-            print(' ', msg)
-
-        savings = calculate_monthly_savings(monthly_income, expenses)
-
-        cash_savings, investment_balance = process_investment(
-            month,
-            savings,
-            cash_savings,
-            investment_balance,
-            investment_ratio,
-            investment_rate
-        )
-
-        net_worth = cash_savings + investment_balance
-
-        print(' Cash savings:', int(cash_savings))
-        print(' Investment balance:', int(investment_balance))
-        print(' Net worth:', int(net_worth))
-
-    print('\n====== SUMMARY ======')
-    print('Months simulated:', months)
-    print('Final cash:', int(cash_savings))
-    print('Final investment:', int(investment_balance))
-    print('Final net worth:', int(cash_savings + investment_balance))
+            print(' Advice:', msg)
 
 simulate_months(6)
