@@ -1,96 +1,67 @@
-def calculate_monthly_savings(income, expenses):
-    return income - expenses
+def get_user_input():
+    try:
+        income = float(input("Enter monthly income: "))
+        expenses = float(input("Enter monthly expenses: "))
+        cash = float(input("Enter cash balance: "))
+        investment = float(input("Enter investment balance: "))
+        return income, expenses, cash, investment
+    except ValueError:
+        print("❌ Please enter numbers only")
+        return get_user_input()
 
 
-def evaluate_financial_health(cash_savings, expenses):
-    """
-    Runway-based evaluation
-    """
-    runway = cash_savings / expenses if expenses > 0 else float('inf')
+def analyze_business(income, expenses, cash, investment):
+    savings = income - expenses
+    net_worth = cash + investment
+    return savings, net_worth
+
+
+def evaluate_status(savings, expenses):
+    runway = savings / expenses if expenses > 0 else float('inf')
 
     if runway < 1:
-        return 'DANGER'
+        return 'DANGER', runway
     elif runway < 3:
-        return 'RISKY'
+        return 'RISKY', runway
     elif runway < 6:
-        return 'STABLE'
+        return 'STABLE', runway
     else:
-        return 'SAFE'
+        return 'SAFE', runway
 
 
-def give_advice(status):
+def generate_advice(status):
     if status == 'DANGER':
-        return ['Emergency: stop investing, focus on survival']
+        return ['Urgent: cut costs and secure cash immediately']
     elif status == 'RISKY':
         return ['Reduce expenses or increase income']
     elif status == 'STABLE':
-        return ['Keep building skills and savings']
+        return ['Keep savings growth']
     else:
-        return ['You can invest more aggressively']
+        return ['You can invest more or hire safely']
 
 
-def handle_life_events(month, income, expenses):
-    messages = []
+def generate_report(income, expenses, savings, net_worth, runway, status, advice):
+    print("\n===== MONTHLY BUSINESS REPORT =====")
+    print("Income:", f"{income:,.0f}")
+    print("Expenses:", f"{expenses:,.0f}")
+    print("Savings:", f"{savings:,.0f}")
+    print("Net worth:", f"{net_worth:,.0f}")
+    print(f"Runway: {runway:.2f} months")
+    print("Status:", status)
 
-    # income grows every 3 months
-    if month % 3 == 0:
-        income *= 1.05
-        messages.append('Income increased!')
-
-    # expenses grow every 6 months
-    if month % 6 == 0:
-        expenses *= 1.03
-        messages.append('Expenses increased!')
-
-    return income, expenses, messages
+    for msg in advice:
+        print("Advice:", msg)
 
 
-def process_investment(savings, cash_savings, investment_balance, ratio, rate):
-    if savings > 0:
-        invest_amount = savings * ratio
-        cash_amount = savings - invest_amount
-    else:
-        invest_amount = 0
-        cash_amount = savings
+def main():
+    income, expenses, cash, investment = get_user_input()
+    savings, net_worth = analyze_business(income, expenses, cash, investment)
+    status, runway = evaluate_status(savings, expenses)
+    advice = generate_advice(status)
 
-    cash_savings += cash_amount
-    investment_balance *= (1 + rate)
-    investment_balance += invest_amount
-
-    return cash_savings, investment_balance
+    generate_report(
+        income, expenses, savings, net_worth, runway, status, advice
+    )
 
 
-def simulate_until_goal():
-    income = 5_000_000
-    expenses = 3_500_000
-    cash = 0
-    investment = 0
-    goal = 20_000_000
-    month = 0
-
-    investment_ratio = 0.30
-    investment_rate = 0.05
-
-    while cash + investment < goal:
-        month += 1
-
-        # life events
-        income, expenses, _ = handle_life_events(month, income, expenses)
-
-        # savings
-        savings = calculate_monthly_savings(income, expenses)
-
-        # investment & growth
-        cash, investment = process_investment(
-            savings, cash, investment, investment_ratio, investment_rate
-        )
-
-        # optional debug
-        net = cash + investment
-        print(f"Month {month} | Net worth: {int(net):,}")
-
-    print("\n🎉 Goal reached!")
-    print("Months needed:", month)
-    print(f"Final net worth: {int(cash + investment):,}")
-
-simulate_until_goal()
+main()
