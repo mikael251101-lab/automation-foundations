@@ -1,10 +1,16 @@
-from interface import get_user_input, print_report
-from engine import analyze_business
+from interface.input_handler import load_businesses_from_csv
+from engine.analyzer import analyze_business
+from reports.printer import print_report
+
 
 def main():
-    income, expenses, cash, investment = get_user_input()
-    result = analyze_business(income, expenses, cash, investment)
-    print_report(result)
+    businesses = load_businesses_from_csv("data/business_data.csv")
+
+    for i, business in enumerate(businesses, start=1):
+        print(f"\n=== BUSINESS #{i} ===")
+        result = analyze_business(business)
+        print_report(business, result)
+
 
 if __name__ == "__main__":
     main()
