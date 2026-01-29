@@ -1,3 +1,5 @@
+import csv
+
 def get_business_inputs():
     try:
         income = float(input("Enter monthly income: "))
@@ -8,16 +10,17 @@ def get_business_inputs():
     except ValueError:
         print("❌ Please enter numbers only")
         return get_business_inputs()
-    
-import csv
+
 
 def load_businesses_from_csv(filename):
     businesses = []
-
     with open(filename, newline="", encoding="utf-8-sig") as file:
         reader = csv.DictReader(file)
         for row in reader:
-            row = {k.strip().lower(): float(v) for k, v in row.items()}
-            businesses.append(row)
-
+            businesses.append({
+                "income": float(row["income"]),
+                "expenses": float(row["expenses"]),
+                "cash": float(row["cash"]),
+                "investment": float(row["investment"]),
+            })
     return businesses

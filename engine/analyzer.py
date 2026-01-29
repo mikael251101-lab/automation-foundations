@@ -1,13 +1,19 @@
-def analyze_business(business):
-    income = business["income"]
-    expenses = business["expenses"]
-    cash = business["cash"]
-    investment = business["investment"]
+from engine.ai_insights import generate_ai_insight
 
+def analyze_business(income, expenses, cash, investment):
     savings = income - expenses
     net_worth = cash + investment
+    runway = cash / expenses if expenses > 0 else float('inf')
 
-    return {
-        "savings": savings,
-        "net_worth": net_worth
+    report = {
+        "income": int(income),
+        "expenses": int(expenses),
+        "savings": int(savings),
+        "cash": int(cash),
+        "investment": int(investment),
+        "net_worth": int(net_worth),
+        "runway_months": round(runway, 2)
     }
+
+    report["ai_insight"] = generate_ai_insight(report)
+    return report
