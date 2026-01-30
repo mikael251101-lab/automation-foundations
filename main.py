@@ -1,29 +1,33 @@
-from interface.input_handler import get_business_inputs, load_businesses_from_csv
+from interface.input_handler import load_businesses_from_csv
 from engine.analyzer import analyze_business
 from reports.printer import generate_pdf_report
-
+from reports.mailer import send_email
 
 def main():
-    choice = input("Choose input method (manual / csv): ").lower()
+    businesses = load_businesses_from_csv("data/business_data.csv")
 
-    if choice == "manual":
-        income, expenses, cash, investment = get_business_inputs()
-        result = analyze_business(income, expenses, cash, investment)
-        path = generate_pdf_report(result)
-        print("📄 PDF saved to:", path)
-
-    elif choice == "csv":
-        businesses = load_businesses_from_csv("data/business_data.csv")
-
-        for i, b in enumerate(businesses, 1):
+    for i, business in enumerate(businesses, start=1):
+        try:
             result = analyze_business(
-                b["income"], b["expenses"], b["cash"], b["investment"]
+                business["income"],
+                business["expenses"],
+                business["cash"],
+                business["investment"]
             )
-            path = generate_pdf_report(result, i)
-            print(f"📄 PDF {i} saved to:", path)
 
-    else:
-        print("❌ Invalid choice")
+            pdf_path = generate_pdf_report(result, i)
+
+            send_email(
+                to_email=business["email"],
+                subject=f"Financial Report - {business['name']}",
+                body="Your report is attached.",
+                attachment=pdf_path
+            )
+
+            print(f"✅ Report sent for {business['name']}")
+
+        except Exception as e:
+            print(f"❌ Failed for {business['name']}:", e)
 
 if __name__ == "__main__":
     main()

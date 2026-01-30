@@ -3,25 +3,29 @@ import os
 
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
-def generate_ai_insight(report_data):
+
+def generate_ai_insight(data):
     prompt = f"""
-You are a business analyst.
+You are a business financial analyst.
 
-Given this data:
-{report_data}
+Analyze this business data and return:
+1. 3 bullet insights
+2. 1 clear recommendation
+3. 1 risk warning (if any)
 
-Provide:
-1. 2–3 short insights
-2. One clear recommendation
-3. One risk warning if any
-
-Keep it concise and professional.
+Business data:
+Income: {data['income']}
+Expenses: {data['expenses']}
+Savings: {data['savings']}
+Cash: {data['cash']}
+Investment: {data['investment']}
+Net Worth: {data['net_worth']}
+Runway Months: {data['runway_months']}
 """
 
-    response = client.chat.completions.create(
-        model="gpt-4o-mini",
-        messages=[{"role": "user", "content": prompt}],
-        max_tokens=150
+    response = client.responses.create(
+        model="gpt-4.1-mini",
+        input=prompt
     )
 
-    return response.choices[0].message.content
+    return response.output_text
